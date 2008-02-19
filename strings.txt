@@ -1,0 +1,14 @@
+PLUGIN_REMOVEPLAYEDSONGS
+	EN	Remove Played Songs
+
+PLUGIN_REMOVEPLAYEDSONGS_DISABLE
+	EN	Disable played song removal
+
+PLUGIN_REMOVEPLAYEDSONGS_ENABLE
+	EN	Enable played song removal
+
+PLUGIN_REMOVEPLAYEDSONGS_DISABLING
+	EN	Disabling played song removal
+
+PLUGIN_REMOVEPLAYEDSONGS_ENABLING
+	EN	Enabling played song removal
