@@ -1,16 +1,18 @@
 <?xml version="1.0"?>
 
 <extension>
-        <name>PLUGIN_REMOVEPLAYEDSONGS</name>
-        <module>Plugins::RemovePlayedSongs::Plugin</module>
-        <version>7.0a2</version>
-        <defaultState>enabled</defaultState>
-        <type>2</type><!-- type=extension -->
-        <targetApplication>
+	<name>PLUGIN_REMOVEPLAYEDSONGS</name>
+	<module>Plugins::RemovePlayedSongs::Plugin</module>
+	<version>7.0a2</version>
+	<defaultState>enabled</defaultState>
+	<type>2</type><!-- type=extension -->
+	<email>slim@koldware.com</email>
+	<homepageURL>http://koldware.com</homepageURL>
+	<targetApplication>
 	    <id>SqueezeCenter</id>
 	    <minVersion>7.0a</minVersion>
-	    <maxVersion>7.0+</maxVersion>
-        </targetApplication>
-		<version>2.0</version>
+	    <maxVersion>*</maxVersion>
+	</targetApplication>
+	<version>2.0</version>
 </extension>
 
