@@ -3,7 +3,6 @@
 <extension>
 	<name>PLUGIN_REMOVEPLAYEDSONGS</name>
 	<module>Plugins::RemovePlayedSongs::Plugin</module>
-	<version>7.0a2</version>
 	<defaultState>enabled</defaultState>
 	<type>2</type><!-- type=extension -->
 	<email>slim@koldware.com</email>
