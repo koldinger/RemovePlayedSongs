@@ -4,6 +4,7 @@
 	<name>PLUGIN_REMOVEPLAYEDSONGS</name>
 	<module>Plugins::RemovePlayedSongs::Plugin</module>
 	<defaultState>enabled</defaultState>
+    <description>PLUGIN_REMOVEPLAYEDSONGS_DESC</description>
 	<type>2</type><!-- type=extension -->
 	<email>slim@koldware.com</email>
 	<homepageURL>http://koldware.com</homepageURL>
@@ -12,6 +13,6 @@
 	    <minVersion>7.0a</minVersion>
 	    <maxVersion>*</maxVersion>
 	</targetApplication>
-	<version>2.0</version>
+	<version>2.1</version>
 </extension>
 
