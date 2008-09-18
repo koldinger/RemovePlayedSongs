@@ -36,6 +36,13 @@ my %curSong = {};
 
 my $prefs = preferences('plugin.removeplayedsongs');
 
+my $log = Slim::Utils::Log->addLogCategory({
+    'category' => 'plugin.removeplayedsongs',
+	'defaultLevel' => 'ERROR',
+	'description' => 'PLUGIN_REMOVEPLAYEDSONGS'
+});
+
+
 sub getDisplayName {
 	return 'PLUGIN_REMOVEPLAYEDSONGS';
 }
@@ -43,8 +50,17 @@ sub getDisplayName {
 sub initPlugin {
 	my $class = shift;
     $class->SUPER::initPlugin(@_);
+
+	$log->debug("Initializing RemovePlayedSongs");
+	print "Remove Played Songs Initializing";
+
 	Slim::Control::Request::subscribe(\&newSongCallback, [['playlist'], ['newsong']]);
 	Slim::Control::Request::subscribe(\&playlistClearedCallback, [['playlist'], ['delete','clear','loadtracks','playtracks','load','play','loadalbum','playalbum']]);
+
+	Slim::Control::Request::addDispatch(['rpsTop'],[1, 1, 0, \&rpsTop]);
+	Slim::Control::Request::addDispatch(['rpsToggle'],[1, 1, 1, \&rpsToggle]);
+
+	initJive();
 }
 
 sub shutdownPlugin {
@@ -54,7 +70,9 @@ sub shutdownPlugin {
 
 sub newSongCallback {
 	my $request = shift;
-	my $client = $request->client();	
+	my $client = $request->client();
+
+	$log->debug("newSongCallback: " . $client->name());
 
 	if (defined($client) &&
 		$prefs->client($client)->get('enabled') &&
@@ -67,11 +85,13 @@ sub newSongCallback {
 			my $firstSong = Slim::Player::Playlist::song($client, 0);
 			my $prevSong = Slim::Player::Playlist::song($client, $curIndex{$client});
 			if (defined($prevSong) && defined($curSong{$client}) && $prevSong->url eq $curSong{$client}->url) {
+				$log->debug("Removing track: " . $client->name() . " " . $curIndex{$client});
 				Slim::Player::Playlist::removeTrack($client, $curIndex{$client});	
 				if($curIndex{$client} < $index) {
 					$index = $index - 1;
 				}
 			} elsif (defined($firstSong) && defined($curSong{$client}) && $firstSong->url eq $curSong{$client}->url) {
+				$log->debug("Removing track: " . $client->name() . " " . 0);
 				Slim::Player::Playlist::removeTrack($client,0);	
 				$index = $index - 1;
 			}
@@ -133,5 +153,81 @@ my %functions = (
 );
 
 sub getFunctions { return \%functions;}
+
+##
+##
+##
+
+sub initJive {
+    $log->debug("Initializing JIVE");
+    my @menu = ({
+        text   => string('PLUGIN_REMOVEPLAYEDSONGS'),
+        id     => 'pluginRemovePlayedSongs',
+        weight => 15,
+        actions => {
+            go => {
+                player => 0,
+                cmd      => [ 'rpsTop' ],
+            }
+        },
+    });
+    Slim::Control::Jive::registerPluginMenu(\@menu, 'extras');
+}
+
+
+sub rpsTop {
+    my $request = shift;
+    my $client = $request->client();
+	my $cPrefs = $prefs->client($client);
+
+	$log->debug("At top: " . $client->name());
+
+    my @menu = ();
+
+    push @menu, {
+		text	=> string('PLUGIN_REMOVEPLAYEDSONGS'),
+		window	=> { menuStyle => 'album' },
+		checkbox => $cPrefs->get('enabled') + 0, 
+		actions  => {
+			on	=> {
+				player =>	$client->id(),
+				cmd		=>	['rpsToggle']
+			},
+			off	=> {
+				player =>	$client->id(),
+				cmd		=>	['rpsToggle']
+			}
+		},
+	};
+
+    my $numitems = scalar(@menu);
+
+    $request->addResult("count", $numitems);
+    $request->addResult("offset", 0);
+    my $cnt = 0;
+    for my $eachPreset (@menu[0..$#menu])
+    {
+        $request->setResultLoopHash('item_loop', $cnt, $eachPreset);
+        $cnt++;
+    }
+
+    $request->setStatusDone();
+}
+
+sub rpsToggle {
+    my $request = shift;
+    my $client = $request->client();
+
+
+	my $cPrefs = $prefs->client($client);
+	my $enabled = $cPrefs->get('enabled');
+	$log->debug("rpsToggle: " . $client->name() . " " . $enabled);
+	$client->showBriefly({ 'line1' => string('PLUGIN_REMOVEPLAYEDSONGS'), 
+						   'line2' => string($enabled ? 'PLUGIN_REMOVEPLAYEDSONGS_DISABLING' :
+														'PLUGIN_REMOVEPLAYEDSONGS_ENABLING') });
+
+	$cPrefs->set('enabled', ($enabled ? 0 : 1));
+    $request->setStatusDone();
+}
         
 1;
