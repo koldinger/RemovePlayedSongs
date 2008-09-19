@@ -28,8 +28,11 @@ use Slim::Buttons::Home;
 use Slim::Utils::Misc;
 use Slim::Utils::Prefs;
 use Slim::Utils::Strings qw(string);
-use File::Spec::Functions qw(:ALL);
-use DBI qw(:sql_types);
+#use File::Spec::Functions qw(:ALL);
+#use DBI qw(:sql_types);
+
+use Plugins::RemovePlayedSongs::PlayerSettings;
+
 
 my %curIndex = {};
 my %curSong = {};
@@ -54,6 +57,8 @@ sub initPlugin {
 	$log->debug("Initializing RemovePlayedSongs");
 	print "Remove Played Songs Initializing";
 
+	Plugins::RemovePlayedSongs::PlayerSettings->new();
+
 	Slim::Control::Request::subscribe(\&newSongCallback, [['playlist'], ['newsong']]);
 	Slim::Control::Request::subscribe(\&playlistClearedCallback, [['playlist'], ['delete','clear','loadtracks','playtracks','load','play','loadalbum','playalbum']]);
 
@@ -72,7 +77,7 @@ sub newSongCallback {
 	my $request = shift;
 	my $client = $request->client();
 
-	$log->debug("newSongCallback: " . $client->name());
+	$log->debug("newSongCallback: " . $client->name() . " " . $prefs->client($client)->get('enabled') . " " . $request->getRequest(0));
 
 	if (defined($client) &&
 		$prefs->client($client)->get('enabled') &&
@@ -81,24 +86,30 @@ sub newSongCallback {
 	{
 		my $index = Slim::Player::Source::playingSongIndex($client);
 		my $song = Slim::Player::Playlist::song($client);
+		$log->debug("Index: " . $index . " CurIndex: " . $curIndex{$client});
 		if($index > 0 && defined($curIndex{$client})) {
 			my $firstSong = Slim::Player::Playlist::song($client, 0);
 			my $prevSong = Slim::Player::Playlist::song($client, $curIndex{$client});
 			if (defined($prevSong) && defined($curSong{$client}) && $prevSong->url eq $curSong{$client}->url) {
 				$log->debug("Removing track: " . $client->name() . " " . $curIndex{$client});
 				Slim::Player::Playlist::removeTrack($client, $curIndex{$client});	
+				Slim::Player::Playlist::refreshPlaylist($client);
+				#$client->execute(["playlist", "delete", $curIndex{$client}]);
+
 				if($curIndex{$client} < $index) {
 					$index = $index - 1;
 				}
 			} elsif (defined($firstSong) && defined($curSong{$client}) && $firstSong->url eq $curSong{$client}->url) {
 				$log->debug("Removing track: " . $client->name() . " " . 0);
 				Slim::Player::Playlist::removeTrack($client,0);	
+				Slim::Player::Playlist::refreshPlaylist($client);
+				#$client->execute(["playlist", "delete", 0]);
 				$index = $index - 1;
 			}
 		}
 		$curSong{$client} = $song;
 		$curIndex{$client} = $index;
-	}	
+	}
 }
 
 sub playlistClearedCallback
