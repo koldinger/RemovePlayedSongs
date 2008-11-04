@@ -42,8 +42,8 @@ sub prefs {
 
 sub handler {
 	my ($class, $client, $params) = @_;
-	$log->debug("ResetVolume::PlayerSettings->handler() called. " . $client->name());
-	Plugins::ResetVolume::Plugin->extSetDefaults($client, 0);
+	$log->debug("RemovePlayedSongs::PlayerSettings->handler() called. " . $client->name());
+	#Plugins::ResetVolume::Plugin->extSetDefaults($client, 0);
 	# Data::Dump::dump($params);
 	if ($params->{'saveSettings'}) {
 		$params->{'pref_enabled'} = 0 unless defined $params->{'pref_enabled'};
