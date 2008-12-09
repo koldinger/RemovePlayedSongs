@@ -77,7 +77,7 @@ sub newSongCallback {
 	my $request = shift;
 	my $client = $request->client();
 
-	$log->debug("newSongCallback: " . $client->name() . " " . $prefs->client($client)->get('enabled') . " " . (Slime::Player::Sync::isSlave($client) . " " . $request->getRequest(0));
+	$log->debug("newSongCallback: " . $client->name() . " " . $prefs->client($client)->get('enabled') . " " . Slim::Player::Sync::isSlave($client) . " " . $request->getRequest(0));
 
 	if (defined($client) &&
 		$prefs->client($client)->get('enabled') &&
