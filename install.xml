@@ -10,7 +10,7 @@
 	<homepageURL>http://koldware.com</homepageURL>
 	<targetApplication>
 	    <id>SqueezeCenter</id>
-	    <minVersion>7.3</minVersion>
+	    <minVersion>7.3.1</minVersion>
 	    <maxVersion>*</maxVersion>
 	</targetApplication>
 	<version>2.3</version>
