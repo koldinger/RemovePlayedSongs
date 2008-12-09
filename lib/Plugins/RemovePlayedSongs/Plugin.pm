@@ -92,18 +92,18 @@ sub newSongCallback {
 			my $prevSong = Slim::Player::Playlist::song($client, $curIndex{$client});
 			if (defined($prevSong) && defined($curSong{$client}) && $prevSong->url eq $curSong{$client}->url) {
 				$log->debug("Removing track: " . $client->name() . " " . $curIndex{$client});
-				Slim::Player::Playlist::removeTrack($client, $curIndex{$client});	
-				Slim::Player::Playlist::refreshPlaylist($client);
-				#$client->execute(["playlist", "delete", $curIndex{$client}]);
+				#Slim::Player::Playlist::removeTrack($client, $curIndex{$client});	
+				#Slim::Player::Playlist::refreshPlaylist($client);
+				$client->execute(["playlist", "delete", $curIndex{$client}]);
 
 				if($curIndex{$client} < $index) {
 					$index = $index - 1;
 				}
 			} elsif (defined($firstSong) && defined($curSong{$client}) && $firstSong->url eq $curSong{$client}->url) {
 				$log->debug("Removing track: " . $client->name() . " " . 0);
-				Slim::Player::Playlist::removeTrack($client,0);	
-				Slim::Player::Playlist::refreshPlaylist($client);
-				#$client->execute(["playlist", "delete", 0]);
+				#Slim::Player::Playlist::removeTrack($client,0);	
+				#Slim::Player::Playlist::refreshPlaylist($client);
+				$client->execute(["playlist", "delete", 0]);
 				$index = $index - 1;
 			}
 		}
